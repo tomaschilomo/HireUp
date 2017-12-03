@@ -1,0 +1,72 @@
+package JavaFinalExamProject;
+import java.nio.ByteBuffer;
+import java.nio.file.*;
+import java.io.*;
+import static java.nio.file.StandardOpenOption.*;
+
+import java.text.DecimalFormat;
+import java.util.Scanner;
+
+public class WriteCustomerList {
+    public static void main(String [] args){
+        Path file = Paths.get("C:\\Java\\FinalExamProject\\CustomerList.txt");
+        Scanner keybord = new Scanner(System.in);
+
+//ID number must have three characters.
+
+        String idString;
+        int id;
+        final String NAME_FORMAT = "          ";
+        final int NAME_LENGTH = NAME_FORMAT.length();
+        String firstName;
+        String lastName;
+        double balanceOwed;
+        final String BALANCE_FORMAT = "0000.00";
+        String delimiter =",";
+        final String QUIT = "999";
+        DecimalFormat df = new DecimalFormat(BALANCE_FORMAT);
+
+
+        try{
+            OutputStream output = new BufferedOutputStream(Files.newOutputStream(file,CREATE));
+            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(output));
+
+            System.out.print("Enter customer account number: >> ");
+            idString = keybord.nextLine();
+
+            while (!(idString.equals(QUIT))){
+
+                id = Integer.parseInt(idString);
+                System.out.print("Enter the customer's first name: >> ");
+                firstName = keybord.nextLine();
+                StringBuilder sb = new StringBuilder(firstName);
+                sb.setLength(NAME_LENGTH);
+                firstName = sb.toString();
+                System.out.print("Enter the customer's last name: >> ");
+                lastName = keybord.nextLine();
+                StringBuilder sb2 = new StringBuilder(lastName);
+                sb2.setLength(NAME_LENGTH);
+                lastName = sb2.toString();
+                System.out.print("Enter the balance owed: >>");
+                balanceOwed = keybord.nextInt();
+                keybord.nextLine();
+
+                String row = id + delimiter + firstName +delimiter + lastName + delimiter+ df.format(balanceOwed)+
+                        System.getProperty("line.separator");
+
+                byte data[] = row.getBytes();
+                writer.write(row);
+
+
+                System.out.print("Enter next customer account number or " + QUIT + " to quit >> ");
+                idString = keybord.nextLine();
+            }
+            writer.close();
+
+        }
+        catch (Exception one){
+            System.out.println("Message: " + one);
+        }
+
+    }
+}
