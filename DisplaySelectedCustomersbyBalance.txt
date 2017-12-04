@@ -1,0 +1,135 @@
+package JavaFinalExamProject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.DecimalFormat;
+import java.util.Scanner;
+import static java.nio.file.StandardOpenOption.*;
+
+public class DisplaySelectedCustomersByBalance {
+
+    public static void main(String[] args) throws NumberFormatException{
+        Scanner keyBoard = new Scanner(System.in);
+        Path file = Paths.get("C:\\Java\\FinalExamProject\\CustomerList.txt");
+
+        String s = "000,          ,          ,0000.00" + System.getProperty("line.separator");
+        final int RESIZE = s.length();
+        byte[] data = s.getBytes();
+        ByteBuffer buffer = ByteBuffer.wrap(data);
+        FileChannel fc = null;
+        String idString;
+        int id;
+        final String QUIT = "999";
+
+        String firstName;
+        String lastName;
+        double balanceOwed;
+        String delimiter =",";
+        String records;
+        String ar[][]= new String[4][4];
+        int i = 0;
+        int k = 0;
+
+        try{
+            fc = (FileChannel)Files.newByteChannel(file, READ);
+            InputStream input = new BufferedInputStream( Files.newInputStream(file));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+            s = reader.readLine();
+
+            String[] array = new String[4];
+            //New Version
+
+            while (i < ar.length){
+                array = s.split(delimiter);
+
+                idString = array[0];
+                ar[i][k] = idString;
+                ++k;
+                firstName =array[1];
+                ar[i][k] = firstName;
+                ++k;
+                lastName = array[2];
+                ar[i][k] = lastName;
+                ++k;
+
+                ar[i][3] =array[3];
+
+
+                ++i;
+                k = 0;
+                s = reader.readLine();
+            }
+
+            System.out.print("Enter the customer balance for LookUp" +
+                    "\nOr " +QUIT + " to quit >> ");
+
+            String checkDecimal;
+            checkDecimal = keyBoard.nextLine();
+            while(!checkDecimal.equals(QUIT)) {
+
+                Double check = Double.parseDouble(checkDecimal);
+
+                DecimalFormat df = new DecimalFormat("0000.00");
+
+                if (!df.format(check).equals(null)) {
+
+                    for (int a = 0; a < ar.length; ++a) {
+                        int b = 3;
+                        if (df.format(check).equals(ar[a][b])) {
+                            id = Integer.parseInt(ar[a][0]);
+                            buffer = ByteBuffer.wrap(data);
+                            fc.position(id * RESIZE);
+                            if (fc.position() < 5 * RESIZE)
+                                fc.read(buffer);
+
+
+                            s = new String(data);
+
+                            fc.read(buffer);
+                            s = new String(data);
+
+                            while (s != null){
+                                array = s.split(delimiter);
+                                idString = array[0];
+//                                        id = Integer.parseInt(array[0]);
+                                firstName = array[1];
+                                balanceOwed = Double.parseDouble(array[3]);
+                                lastName = array[2];
+                                System.out.println();
+                                System.out.println("ID #" + idString + " " + firstName + " "+ lastName + " $" + balanceOwed + "\n");
+                                s = reader.readLine();
+                            }
+
+                        }
+
+                    }
+                }
+
+                System.out.println();
+
+                System.out.println("Balance entered is out of scope ");
+
+                System.out.println();
+
+                System.out.print("Enter the customer balance for LookUp" +
+                        "\nOr " +QUIT + " to quit >> ");
+
+                checkDecimal = keyBoard.nextLine();
+            }
+            fc.close();
+        }
+
+        catch (Exception e) {
+            System.out.println("Error message: " + e);
+        }
+
+    }
+
+}
