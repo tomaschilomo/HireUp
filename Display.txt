@@ -1,0 +1,47 @@
+package JavaFinalExamProject;
+
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+public class DisplayedSavedCustomerList {
+    public static void main(String[] args){
+        Path file = Paths.get("C:\\Java\\FinalExamProject\\CustomerList.txt");
+
+        String idString;
+        int id;
+        String firstName;
+        String lastName;
+        double balanceOwed;
+        String delimiter =",";
+        String records;
+        String[] array = new String[4];
+
+        try{
+            InputStream input = new BufferedInputStream( Files.newInputStream(file));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(input));
+            records = reader.readLine();
+
+            while (records != null){
+                array = records.split(delimiter);
+                idString = array[0];
+                id = Integer.parseInt(array[0]);
+                firstName = array[1];
+                balanceOwed = Double.parseDouble(array[3]);
+                lastName = array[2];
+                System.out.println("ID #" + id + " " + firstName + " "+ lastName + " $" + balanceOwed);
+                records = reader.readLine();
+            }
+            reader.close();
+        }
+        catch (Exception Read){
+            System.out.println("Message: " + Read);
+        }
+
+    }
+
+}
