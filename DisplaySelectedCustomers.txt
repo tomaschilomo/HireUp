@@ -1,0 +1,58 @@
+package JavaFinalExamProject;
+
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Scanner;
+import static java.nio.file.StandardOpenOption.*;
+
+public class DisplaySelectedCustomers {
+
+    public static void main(String[] args){
+        Scanner keyBoard = new Scanner(System.in);
+        Path file = Paths.get("C:\\Java\\FinalExamProject\\CustomerList.txt");
+
+        String s = "000,          ,          ,0000.00" + System.getProperty("line.separator");
+        final int RESIZE = s.length();
+        byte[] data = s.getBytes();
+        ByteBuffer buffer = ByteBuffer.wrap(data);
+        FileChannel fc = null;
+        String idString;
+        int id;
+        final String QUIT = "999";
+
+        try{
+            fc = (FileChannel)Files.newByteChannel(file, READ, WRITE);
+            System.out.print("Enter the customer ID number for LookUp" +
+                    "\nOr " +QUIT + " to quit >> ");
+            idString = keyBoard.nextLine();
+            while(!idString.equals(QUIT)) {
+
+                id = Integer.parseInt(idString);
+                buffer= ByteBuffer.wrap(data);
+                fc.position(id * RESIZE);
+
+                if(fc.position() < 5 *RESIZE) {
+                    fc.read(buffer);
+                    s = new String(data);
+                    System.out.println("ID #" + id + " " + s);
+                    System.out.print("Enter employee ID number or " + QUIT + " to quit >> ");
+                    idString = keyBoard.nextLine();
+                }
+                else{
+                    System.out.println("ID# out of scope.");
+                    System.out.print("Enter employee ID number or " + QUIT + " to quit >> ");
+                    idString = keyBoard.nextLine();
+                }
+            }
+            fc.close();
+        }
+        catch (Exception e) {
+            System.out.println("Error message: " + e);
+        }
+
+    }
+
+}
